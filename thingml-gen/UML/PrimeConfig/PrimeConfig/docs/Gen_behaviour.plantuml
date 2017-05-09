@@ -1,0 +1,16 @@
+@startuml
+skinparam defaultTextAlignment left
+caption Behavior of thing Generator
+[*] --> behaviour
+state behaviour{
+state Generate{
+
+Generate --> Learn : action do \ntestNumber = generateNumber()\nprime_service!testForPrime(testNumber)\nprint ("Generate [testNumber]")\nend\n
+}
+state Learn{
+
+Learn --> Generate : result:prime_service?result\naction do \nupdateModel(...)\nprint ("Learn")\nend\n
+}
+[*] --> Generate
+}
+@enduml

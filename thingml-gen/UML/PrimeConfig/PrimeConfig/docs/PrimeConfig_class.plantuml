@@ -1,0 +1,47 @@
+@startuml
+caption Things used in configuration PrimeConfig
+class Gen <<(T,#F94918)PSM>> {
+..Functions..
+-generateNumber() : UInt8
+-updateModel(number : UInt8isPrime : Boolean) : void
+}
+note left of Gen : <b>@platform</b> <color:royalBlue>"arduino"</color>\n
+class Generator <<(F,#BC74ED)Fragment>> {
+..Properties..
+-testNumber : UInt8 = 10
+..Functions..
+-generateNumber() : UInt8
+-updateModel(number : UInt8isPrime : Boolean) : void
+}
+class PrimeGenerator <<(F,#BC74ED)Fragment>> {
+..Port prime_service..
+>>result
+<<testForPrime
+}
+class PrimeMsgs <<(F,#BC74ED)Fragment>> {
+..Messages..
+-testForPrime(number : UInt8)
+-result(isPrime : Boolean)
+}
+class Check <<(T,#F94918)PSM>> {
+..Functions..
+-mod(number : UInt8divisor : UInt8) : Boolean
+}
+note left of Check : <b>@platform</b> <color:royalBlue>"arduino"</color>\n
+class Checker <<(F,#BC74ED)Fragment>> {
+..Functions..
+-mod(number : UInt8divisor : UInt8) : Boolean
+-checkNumber(x : UInt8) : void
+}
+class PrimeChecker <<(F,#BC74ED)Fragment>> {
+..Port prime_service..
+>>testForPrime
+<<result
+}
+Generator <|-- Gen
+PrimeGenerator <|-- Generator
+PrimeMsgs <|-- PrimeGenerator
+Checker <|-- Check
+PrimeChecker <|-- Checker
+PrimeMsgs <|-- PrimeChecker
+@enduml

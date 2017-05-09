@@ -1,0 +1,6 @@
+@startuml
+caption Instances and Connectors in configuration PrimeConfig
+component gen<<PSM>>
+component check<<PSM>>
+gen -(0- check : prime_service => prime_service
+@enduml

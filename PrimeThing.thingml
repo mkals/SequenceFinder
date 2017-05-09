@@ -1,0 +1,84 @@
+datatype UInt8<1>	
+	@type_checker "Integer"
+	@c_type "uint8_t"
+	@c_byte_size "1";
+	
+datatype Boolean<1>	
+	@type_checker "Boolean"
+	@c_type "uint8_t"
+	@c_byte_size "1";
+
+thing fragment PrimeMsgs {
+	message testForPrime(number: UInt8)
+	message result(isPrime: Boolean)
+	
+	readonly property MAX_UINT8 : UInt8 = 255
+}
+
+thing fragment PrimeGenerator includes PrimeMsgs {
+	required port prime_serviceG {
+		sends testForPrime
+		receives result
+	}
+}
+
+thing fragment PrimeChecker includes PrimeMsgs {
+	provided port prime_serviceC {
+		sends result
+		receives testForPrime
+	}
+}
+
+thing fragment Generator includes PrimeGenerator {
+	
+	abstract function generateNumber() : UInt8  @abstract "true"
+	abstract function updateModel(number: UInt8, isPrime : Boolean) @abstract "true"
+	property testNumber : UInt8 = 10
+	
+	statechart behaviour init Generate {
+				
+		state Generate {
+			
+			transition -> Learn
+			action do 
+				testNumber = generateNumber()
+				prime_serviceG!testForPrime(testNumber)
+			end
+		}
+		
+		state Learn {
+			transition -> Generate
+			event result : prime_serviceG?result
+			action do 
+				updateModel(testNumber, result.isPrime)
+			end
+		}
+	}
+}
+
+
+thing fragment Checker includes PrimeChecker {
+	
+	abstract function mod(number : UInt8, divisor : UInt8) : UInt8 @abstract "true"
+	
+	function checkNumber(x : UInt8) : Boolean do
+		var isPrime : Boolean = true
+		var d : UInt8 = x-1
+		while (d >= 2) do
+			if (mod(x,d) == 0) isPrime = false			
+			d = d - 1
+		end
+		return isPrime
+	end
+	
+	statechart behaviour init Active {
+		state Active {
+			
+			transition -> Active
+			event result : prime_serviceC?testForPrime 
+			action do 
+				 prime_serviceC!result(checkNumber(result.number))
+			end
+		}
+	}
+}

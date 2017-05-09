@@ -1,0 +1,45 @@
+import "../PrimeThing.thingml"
+
+thing Gen includes Generator 
+@platform "arduino"
+{
+	property goodNumbers : UInt8[MAX_UINT8] 
+	property badNumbers : UInt8[MAX_UINT8]
+	property goodIndex : UInt8 = 0
+	property badIndex : UInt8 = 0
+	
+	function generateNumber() : UInt8 do
+		var newNumber : UInt8 = 'random(0, 255)'
+		return newNumber
+	end
+	
+	function updateModel(number: UInt8, isPrime : Boolean) do
+		if (isPrime) do
+			'Serial.printf("%d is prime\n",'& number & ');'
+			goodNumbers[goodIndex] = number
+			goodIndex = goodIndex + 1
+		end	else do
+			'Serial.printf("%d not prime\n",'& number & ');'
+			badNumbers[badIndex] = number
+			badIndex = badIndex + 1
+		end
+	end
+}
+
+thing Check includes Checker 
+@platform "arduino"
+{
+	function mod(number : UInt8, divisor : UInt8) : Boolean do
+		return 'number % divisor'
+	end
+}
+
+
+configuration PrimeConfig
+@arduino_stdout "Serial"
+{
+	instance gen: Gen
+	instance check: Check
+	
+	connector gen.prime_serviceG => check.prime_serviceC
+}

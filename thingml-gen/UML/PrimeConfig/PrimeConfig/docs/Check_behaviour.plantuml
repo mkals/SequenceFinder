@@ -1,0 +1,12 @@
+@startuml
+skinparam defaultTextAlignment left
+caption Behavior of thing Checker
+[*] --> behaviour
+state behaviour{
+state Active{
+
+Active --> Active : num:prime_service?testForPrime\naction do \nprime_service!result(checkNumber(testForPrime.number))\nprint ("Active")\nend\n
+}
+[*] --> Active
+}
+@enduml
